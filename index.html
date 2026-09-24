@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Картинка со свайпом</title>
+    <title>Подарок-сюрприз</title>
     <style>
         * {
             margin: 0;
@@ -15,119 +15,233 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* Полноэкранная картинка */
+        /* Полноэкранная картинка (изначально скрыта) */
         .fullscreen-bg {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
             opacity: 0;
-            transition: opacity 0.8s ease; /* Плавное появление картинки */
+            transition: opacity 1.5s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
 
-        /* Класс, который сделает картинку видимой */
         .fullscreen-bg.visible {
             opacity: 1;
+            z-index: 20; /* Перекрывает всё после победы */
         }
 
-        /* Экран-заставка (шторка) */
-        .swipe-overlay {
+        /* Игровой интерфейс */
+        .game-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: #fff;
             z-index: 10;
-            transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1); /* Плавное уезжание вверх */
-            cursor: pointer;
-            user-select: none;
-        }
-
-        /* Когда свайп сработал — поднимаем шторку вверх */
-        .swipe-overlay.hidden {
-            transform: translateY(-100%);
-        }
-
-        /* Текст подсказки */
-        .swipe-text {
-            font-size: 24px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
+            padding: 20px;
             text-align: center;
-            padding: 0 20px;
+            background: radial-gradient(circle, #1e1e24 0%, #0a0a0c 100%);
         }
 
-        /* Анимированная стрелочка вверх */
-        .arrow {
-            font-size: 32px;
-            animation: bounce 1.5s infinite;
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 400px;
+            width: 100%;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-15px); }
-            60% { transform: translateY(-7px); }
+        h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #a0a0a0;
+        }
+
+        .math-expr {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 22px;
+            border-radius: 12px;
+            border: 2px solid #333;
+            background: #1a1a1a;
+            color: #fff;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 15px;
+        }
+
+        input:focus {
+            border-color: #00f2fe;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            transition: transform 0.1s, box-shadow 0.3s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Анимация ошибки */
+        .shake {
+            animation: shakeAnim 0.4s ease-in-out;
+            border-color: #ff4d4d !important;
+        }
+
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* Финальный текст перед картинкой */
+        .final-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00f2fe;
+            display: none;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Заставка, которую нужно смахнуть -->
-    <div class="swipe-overlay" id="overlay">
-        <div class="arrow">▲</div>
-        <div class="swipe-text">Проведи пальцем вверх</div>
+    <!-- Игровой экран -->
+    <div class="game-overlay" id="game-screen">
+        <div class="game-card" id="card">
+            <h2 id="progress-text">Вопрос 1 из 5</h2>
+            <div class="math-expr" id="question">Загрузка...</div>
+            <input type="number" id="answer-input" placeholder="Введите ответ" pattern="[0-9]*" inputmode="numeric">
+            <button id="submit-btn">Ответить</button>
+            <div class="final-text" id="gift-text">Дорешай для подарка!</div>
+        </div>
     </div>
 
-    <!-- Наша картинка -->
-    <img src="vas.jpeg" alt="Фон" class="fullscreen-bg" id="bg-img">
+    <!-- Финальная картинка -->
+    <img src="vas.jpeg" alt="Сюрприз" class="fullscreen-bg" id="bg-img">
 
     <script>
-        const overlay = document.getElementById('overlay');
+        // База легких примеров 5 класса (сложение, вычитание, простое умножение и деление)
+        const allQuestions = [
+            { text: "12 × 5", ans: 60 },
+            { text: "150 - 45", ans: 105 },
+            { text: "84 ÷ 4", ans: 21 },
+            { text: "13 + 28", ans: 41 },
+            { text: "9 × 8", ans: 72 },
+            { text: "200 - 65", ans: 135 },
+            { text: "60 ÷ 5", ans: 12 },
+            { text: "37 + 14", ans: 51 }
+        ];
+
+        // Перемешиваем и выбираем 5 случайных
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        const gameQuestions = shuffled.slice(0, 5);
+
+        let currentStep = 0;
+
+        const questionEl = document.getElementById('question');
+        const inputEl = document.getElementById('answer-input');
+        const buttonEl = document.getElementById('submit-btn');
+        const progressEl = document.getElementById('progress-text');
+        const giftTextEl = document.getElementById('gift-text');
+        const cardEl = document.getElementById('card');
         const bgImg = document.getElementById('bg-img');
-        
-        let touchStartY = 0;
-        let touchEndY = 0;
 
-        // Отслеживаем начало касания
-        window.addEventListener('touchstart', (e) => {
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
-
-        // Отслеживаем движение пальца и финал касания
-        window.addEventListener('touchend', (e) => {
-            touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-        }, { passive: true });
-
-        // Для ПК: обычный клик тоже откроет картинку
-        overlay.addEventListener('click', () => {
-            unlockSite();
-        });
-
-        // Функция проверки свайпа
-        function handleSwipe() {
-            // Если палец переместился снизу вверх больше чем на 50 пикселей
-            if (touchStartY - touchEndY > 50) {
-                unlockSite();
+        function loadQuestion() {
+            if (currentStep < gameQuestions.length) {
+                progressEl.textContent = `Вопрос ${currentStep + 1} из 5`;
+                questionEl.textContent = gameQuestions[currentStep].text;
+                inputEl.value = '';
+                inputEl.focus();
+                
+                // На последнем вопросе меняем оформление под финал
+                if (currentStep === gameQuestions.length - 1) {
+                    giftTextEl.style.display = 'block';
+                }
             }
         }
 
-        // Функция открытия картинки
-        function unlockSite() {
-            overlay.classList.add('hidden'); // Убираем шторку наверх
-            bgImg.classList.add('visible');  // Плавно проявляем картинку
+        function checkAnswer() {
+            const userAnswer = parseInt(inputEl.value, 10);
+            const correctAnswer = gameQuestions[currentStep].ans;
+
+            if (userAnswer === correctAnswer) {
+                currentStep++;
+                if (currentStep < gameQuestions.length) {
+                    loadQuestion();
+                } else {
+                    // Победа! Плавный переход к картинке
+                    progressEl.style.display = 'none';
+                    questionEl.style.display = 'none';
+                    inputEl.style.display = 'none';
+                    buttonEl.style.display = 'none';
+                    giftTextEl.textContent = "Ура! Вот твой подарок! 🎉";
+                    
+                    setTimeout(() => {
+                        bgImg.classList.add('visible');
+                    }, 800);
+                }
+            } else {
+                // Если ответ неверный — карточка трясется
+                inputEl.classList.add('shake');
+                setTimeout(() => {
+                    inputEl.classList.remove('shake');
+                }, 400);
+            }
         }
+
+        // Клик по кнопке
+        buttonEl.addEventListener('click', checkAnswer);
+
+        // Обработка нажатия Enter в поле ввода
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // Запуск первой игры
+        loadQuestion();
     </script>
 </body>
 </html>
