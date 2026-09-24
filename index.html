@@ -15,18 +15,19 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #121212;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f7f9fa; /* Спокойный светлый фон вместо черного космоса */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1a1a1a;
         }
 
-        /* Полноэкранная картинка (изначально скрыта) */
+        /* Полноэкранная картинка */
         .fullscreen-bg {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1s ease-in-out;
             position: absolute;
             top: 0;
             left: 0;
@@ -35,10 +36,10 @@
 
         .fullscreen-bg.visible {
             opacity: 1;
-            z-index: 20; /* Перекрывает всё после победы */
+            z-index: 20;
         }
 
-        /* Игровой интерфейс */
+        /* Простой минималистичный интерфейс */
         .game-overlay {
             position: absolute;
             top: 0;
@@ -46,122 +47,104 @@
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #fff;
             z-index: 10;
-            padding: 20px;
-            text-align: center;
-            background: radial-gradient(circle, #1e1e24 0%, #0a0a0c 100%);
+            padding: 24px;
         }
 
         .game-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 400px;
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px; /* Чуть более строгие углы */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Едва заметная мягкая тень */
+            border: 1px solid #e1e8ed;
+            max-width: 360px;
             width: 100%;
+            text-align: center;
         }
 
         h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: #a0a0a0;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8899a6;
+            margin-bottom: 15px;
         }
 
         .math-expr {
-            font-size: 42px;
-            font-weight: bold;
-            margin: 20px 0;
-            color: #4facfe;
-            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #1a1a1a;
         }
 
         input {
             width: 100%;
-            padding: 15px;
-            font-size: 22px;
-            border-radius: 12px;
-            border: 2px solid #333;
-            background: #1a1a1a;
-            color: #fff;
+            padding: 14px;
+            font-size: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccd6dd;
+            background: #ffffff;
+            color: #1a1a1a;
             text-align: center;
             outline: none;
-            transition: border-color 0.3s;
-            margin-bottom: 15px;
+            transition: border-color 0.2s;
+            margin-bottom: 16px;
         }
 
         input:focus {
-            border-color: #00f2fe;
+            border-color: #1da1f2; /* Спокойный синий фокус без свечения */
         }
 
         button {
             width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            background-color: #1a1a1a; /* Строгая матовая кнопка */
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             color: white;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
-            transition: transform 0.1s, box-shadow 0.3s;
+            transition: background-color 0.2s;
         }
 
-        button:active {
-            transform: scale(0.98);
+        button:hover, button:active {
+            background-color: #333333;
         }
 
-        /* Анимация ошибки */
-        .shake {
-            animation: shakeAnim 0.4s ease-in-out;
-            border-color: #ff4d4d !important;
+        /* Простая анимация ошибки (просто красная рамка, без тряски) */
+        .error-border {
+            border-color: #e0245e !important;
         }
 
-        @keyframes shakeAnim {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
-        }
-
-        /* Финальный текст перед картинкой */
+        /* Текст-подсказка */
         .final-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #00f2fe;
+            font-size: 15px;
+            font-weight: 500;
+            color: #e0245e; /* Спокойный акцентный цвет */
+            margin-top: 15px;
             display: none;
-            animation: pulse 1s infinite alternate;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.05); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Игровой экран -->
     <div class="game-overlay" id="game-screen">
-        <div class="game-card" id="card">
-            <h2 id="progress-text">Вопрос 1 из 5</h2>
-            <div class="math-expr" id="question">Загрузка...</div>
-            <input type="number" id="answer-input" placeholder="Введите ответ" pattern="[0-9]*" inputmode="numeric">
-            <button id="submit-btn">Ответить</button>
+        <div class="game-card">
+            <h2 id="progress-text">Пример 1 из 5</h2>
+            <div class="math-expr" id="question">...</div>
+            <input type="number" id="answer-input" placeholder="Ответ" pattern="[0-9]*" inputmode="numeric">
+            <button id="submit-btn">Готово</button>
             <div class="final-text" id="gift-text">Дорешай для подарка!</div>
         </div>
     </div>
 
-    <!-- Финальная картинка -->
-    <img src="vas.jpeg" alt="Сюрприз" class="fullscreen-bg" id="bg-img">
+    <img src="vas.jpg" alt="Сюрприз" class="fullscreen-bg" id="bg-img">
 
     <script>
-        // База легких примеров 5 класса (сложение, вычитание, простое умножение и деление)
         const allQuestions = [
             { text: "12 × 5", ans: 60 },
             { text: "150 - 45", ans: 105 },
@@ -173,7 +156,6 @@
             { text: "37 + 14", ans: 51 }
         ];
 
-        // Перемешиваем и выбираем 5 случайных
         const shuffled = allQuestions.sort(() => 0.5 - Math.random());
         const gameQuestions = shuffled.slice(0, 5);
 
@@ -184,17 +166,16 @@
         const buttonEl = document.getElementById('submit-btn');
         const progressEl = document.getElementById('progress-text');
         const giftTextEl = document.getElementById('gift-text');
-        const cardEl = document.getElementById('card');
         const bgImg = document.getElementById('bg-img');
 
         function loadQuestion() {
             if (currentStep < gameQuestions.length) {
-                progressEl.textContent = `Вопрос ${currentStep + 1} из 5`;
+                progressEl.textContent = `Пример ${currentStep + 1} из 5`;
                 questionEl.textContent = gameQuestions[currentStep].text;
                 inputEl.value = '';
+                inputEl.classList.remove('error-border');
                 inputEl.focus();
                 
-                // На последнем вопросе меняем оформление под финал
                 if (currentStep === gameQuestions.length - 1) {
                     giftTextEl.style.display = 'block';
                 }
@@ -210,37 +191,23 @@
                 if (currentStep < gameQuestions.length) {
                     loadQuestion();
                 } else {
-                    // Победа! Плавный переход к картинке
-                    progressEl.style.display = 'none';
-                    questionEl.style.display = 'none';
-                    inputEl.style.display = 'none';
-                    buttonEl.style.display = 'none';
-                    giftTextEl.textContent = "Ура! Вот твой подарок! 🎉";
-                    
-                    setTimeout(() => {
-                        bgImg.classList.add('visible');
-                    }, 800);
+                    // Убираем форму и показываем картинку
+                    document.getElementById('game-screen').style.display = 'none';
+                    bgImg.classList.add('visible');
                 }
             } else {
-                // Если ответ неверный — карточка трясется
-                inputEl.classList.add('shake');
-                setTimeout(() => {
-                    inputEl.classList.remove('shake');
-                }, 400);
+                inputEl.classList.add('error-border');
             }
         }
 
-        // Клик по кнопке
         buttonEl.addEventListener('click', checkAnswer);
-
-        // Обработка нажатия Enter в поле ввода
         inputEl.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
+            if (e.key === 'Enter') checkAnswer();
+        });
+        inputEl.addEventListener('input', () => {
+            inputEl.classList.remove('error-border');
         });
 
-        // Запуск первой игры
         loadQuestion();
     </script>
 </body>
